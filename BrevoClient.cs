@@ -33,7 +33,12 @@ public class BrevoClient //: IEmailSender
         return false;
     }
 
-    public async Task<bool> SendEmailByTemplateAsync(string email, long templateId, bool skipUserCheck = true, string? bccAddress = null, Dictionary<string, string>? attributes = null)
+    public async Task<bool> SendEmailByTemplateAsync(string email, 
+                                                     long templateId, 
+                                                     bool skipUserCheck = true, 
+                                                     string? bccAddress = null, 
+                                                     Dictionary<string, string>? attributes = null,
+                                                     Dictionary<string, byte[]>? attachements = null)
     {
         try
         {
@@ -53,6 +58,13 @@ public class BrevoClient //: IEmailSender
                 };
                 if (!string.IsNullOrEmpty(bccAddress))
                     msg.Bcc = new() { new(bccAddress) };
+                if (attachements != null)
+                { 
+                    msg.Attachment = new();
+                    foreach (var attachement in attachements)
+                        msg.Attachment.Add(new() { Name = attachement.Key, Content = attachement.Value });
+                }
+               
                 await trans.SendTransacEmailAsync(msg);
                 return true;
             }
