@@ -33,7 +33,7 @@ public class BrevoClient //: IEmailSender
         return false;
     }
 
-    public async Task<bool> SendEmailByTemplateAsync(string email, 
+    public async Task<Models.Result> SendEmailByTemplateAsync(string email, 
                                                      long templateId, 
                                                      bool skipUserCheck = true, 
                                                      string? bccAddress = null, 
@@ -65,15 +65,25 @@ public class BrevoClient //: IEmailSender
                         msg.Attachment.Add(new() { Name = attachement.Key, Content = attachement.Value });
                 }
                
-                await trans.SendTransacEmailAsync(msg);
-                return true;
+              var resp =  await trans.SendTransacEmailAsync(msg);
+                return new Models.Result
+                {
+                    Success = true,
+                    MessageId = resp.MessageId
+                };
+                
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Send Email By Template Error");
+            return new Models.Result
+            {
+                Success = false,
+                Message = ex.Message,
+                Exception = ex
+            };
         }
-        return false;
     }
 
     private async Task<bool> CheckUserAsync(string emailAddress)
