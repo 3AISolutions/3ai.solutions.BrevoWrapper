@@ -46,6 +46,12 @@ public class BrevoClient //: IEmailSender
             if (!isValidUser)
             {
                 _logger.LogError("User not found or blacklisted: {email}", email);
+                return new Models.Result
+                {
+                    Success = false,
+                    Message = "User not found or blacklisted"
+
+                };
             }
             else
             {
